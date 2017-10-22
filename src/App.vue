@@ -5,9 +5,8 @@
       </div>
       <nav>
         <a href="#/">Home</a>
-        <a href="#/vueLineChart">Grafico Valoracion</a>
-        <a href="#/actors">Actors</a>
-        <a href="#/newActor">New actors</a>
+        <a href="#/Grafico">Grafico Valoracion</a>
+        
       </nav>
     </header>
 

@@ -4,7 +4,7 @@ import Index from './Index.vue';
 import Actors from './Actors.vue';
 import NewActor from './NewActor.vue';
 import VueResource from 'vue-resource';
-import VueLineChart from './VueLineChart.vue'
+import Grafico from './Grafico.vue'
 require("./style.scss");
 
 import App from './App.vue';
@@ -12,9 +12,7 @@ Vue.use(VueRouter);
 Vue.use(VueResource);
 const routes = [
   { path: '/index', alias: '/', component: Index},
-  { path:'/actors', component: Actors}, 
-  { path: '/newActor', component: NewActor},
-  { path: '/vueLineChart', component: VueLineChart}
+  { path: '/Grafico', component: Grafico}
 ]
 
 // Create the router instance and pass the `routes` option

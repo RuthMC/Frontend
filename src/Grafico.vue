@@ -4,8 +4,7 @@
 
 <script>
 import * as d3 from 'd3'
-var vm = this;
-vm.users = [];
+
 export default {
   name: 'barcharts',
   props: {
@@ -14,6 +13,9 @@ export default {
     },
     colorOne: {
       default: '#f90a0a'
+    },
+    titulo: {
+      default : 'Grafico de valoracion de Juegos'
     },
     labelTwo: {
       default : 'Positivo'
@@ -29,28 +31,31 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+
+    }
   },
   mounted () {
   console.log('Index.vue');
 
     // GET /someUrl
-    this.$http.get('')
+    this.$http.get('http://localhost:8090/restApi-tweetgame/games')
     .then(response=>{
        // get body data
-      this.createLine('#bCanvas', response.data, this.labelOne, this.colorOne, this.labelTwo, this.colorTwo);
+      this.createLine('#bCanvas', response.data, this.labelOne, this.colorOne, this.labelTwo, this.colorTwo, this.titulo);
     }, response=>{
        // error callback
        console.log('error cargando datos');
     })
-  },,
+  },
   methods: {
-    createLine(id, csv, labelOne, colorOne, labelTwo, colorTwo) {
-      var canvasWidth = 600
+    createLine(id, csv, labelOne, colorOne, labelTwo, colorTwo, titulo) {
+      var canvasWidth = 500
       var canvasHeight = 200
-      var margins = {top: 0, bottom: 10, left: 50, rigth: 0}
+      var margins = {top: 0, bottom: 10, left: 30, rigth: 10}
       var width = canvasWidth - margins.left - margins.rigth
       var height = canvasHeight - margins.top - margins.bottom
+      
       // var width = barHeight * (csv.length - 1)
       var canvas = d3.select(id).append('svg')
         .attr("preserveAspectRatio", "xMinYMin meet")
@@ -78,15 +83,15 @@ export default {
         .attr('class', 'spark-x axis')
         .attr("transform", "translate(" + margins.left + "," + height + ")")
         .call(xAx)
-      canvas.selectAll(".success").data(d3.entries(csv))
+       canvas.selectAll(".success").data(d3.entries(csv))
         .enter()
         .append("rect")
         .attr("transform", "translate(" + margins.left + ",0)")
         .attr('class', 'success')
         .attr("x", function (d) { return x(d.value.game_name) })
         .attr("width", x.bandwidth()/2)
-        .attr("y", function (d) { return y(d.value.tweets_pos })
-        .attr("height", function (d) { return height - y(d.value.tweets_pos) })
+        .attr("y", function (d) { return y(d.value.resume.tweets_pos) })
+        .attr("height", function (d) { return height - y(d.value.resume.tweets_pos) })
         .style( "fill", colorOne )
       var bar = canvas.selectAll(".fail").data(d3.entries(csv))
         .enter()
@@ -95,8 +100,8 @@ export default {
         .attr("class", "fail")
         .attr("x", function(d) { return x(d.value.game_name) + x.bandwidth()/2 })
         .attr("width", x.bandwidth()/2)
-        .attr("y", function(d) { return y(d.value.tweets_neg); })
-        .attr("height", function(d) { return height - y(d.value.tweets_neg; })
+        .attr("y", function(d) { return y(d.value.resume.tweets_neg); })
+        .attr("height", function(d) { return height - y(d.value.resume.tweets_neg); })
         .style( "fill", colorTwo )
       canvas
         .append("rect")
@@ -112,6 +117,13 @@ export default {
         .attr("y", 250)
         .attr("x", 50)
         .text(labelOne)
+        .attr("fill", "black")
+      canvas
+        .append("text")
+        .attr("class", "spark-text")
+        .attr("y", 0.5)
+        .attr("x", 130)
+        .text(titulo)
         .attr("fill", "black")
       canvas
         .append("rect")
@@ -131,28 +143,34 @@ export default {
     }
   },
   watch: {
+     titulo: {
+      handler: function (val, oldVal) {
+        d3.select('#bCanvas svg').remove()
+        this.createLine('#bCanvas', this.data, val, this.colorOne, this.labelTwo, this.colorTwo,this.labelOne)
+      }
+    },
     labelOne: {
       handler: function (val, oldVal) {
         d3.select('#bCanvas svg').remove()
-        this.createLine('#bCanvas', this.data, val, this.colorOne, this.labelTwo, this.colorTwo)
+        this.createLine('#bCanvas', this.data, val, this.colorOne, this.labelTwo, this.colorTwo,this.titulo)
       }
     },
     colorOne: {
       handler: function (val, oldVal) {
         d3.select('#bCanvas svg').remove()
-        this.createLine('#bCanvas', this.data, this.labelOne, val, this.labelTwo, this.colorTwo)
+        this.createLine('#bCanvas', this.data, this.labelOne, val, this.labelTwo, this.colorTwo,this.titulo)
       }
     },
     labelTwo: {
       handler: function (val, oldVal) {
         d3.select('#bCanvas svg').remove()
-        this.createLine('#bCanvas', this.data, this.labelOne, this.colorOne, val, this.colorTwo)
+        this.createLine('#bCanvas', this.data, this.labelOne, this.colorOne, val, this.colorTwo,this.titulo)
       }
     },
     colorTwo: {
       handler: function (val, oldVal) {
         d3.select('#bCanvas svg').remove()
-        this.createLine('#bCanvas', this.data, this.labelOne, this.colorOne, this.labelTwo, val)
+        this.createLine('#bCanvas', this.data, this.labelOne, this.colorOne, this.labelTwo, val, this.titulo)
       }
     }
   }
@@ -177,8 +195,8 @@ export default {
     display: inline-block;
     position: absolute;
     overflow: visible !important;
-    top: 0;
-    left: 0;
+    top: 70;
+    left: 10;
 }
 .axis {
     shape-rendering: crispEdges;
@@ -199,7 +217,7 @@ export default {
 .axis path,
 .axis line {
     fill: none;
-    stroke: grey;
+    stroke: blue;
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
